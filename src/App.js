@@ -1,25 +1,33 @@
-import logo from './logo.svg';
+import { useEffect, useState } from 'react';
 import './App.css';
+import MovieContainer from './components/MovieContainer';
+import { Search } from './components/Search';
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+	const [movies, setMovies] = useState();
+	const [searchTerm, setSearchTerm] = useState('');
+	const movies_url = `https://api.themoviedb.org/3/discover/movie?api_key=${process.env.REACT_APP_API_KEY}`;
+	const search_url = `https://api.themoviedb.org/3/search/movie?api_key=${process.env.REACT_APP_API_KEY}&query=${searchTerm}`;
+
+	useEffect(() => {
+		getMovies(movies_url);
+	}, []);
+
+	const getMovies = async (url) => {
+		const response = await fetch(url);
+		const data = await response.json();
+		console.log(data.results);
+		setMovies(data.results); // `results` from the tmdb docs
+	};
+
+	return (
+		<div className='App'>
+			<header>
+				<Search setSearchTerm={setSearchTerm} />
+			</header>
+			<MovieContainer movies={movies} />
+		</div>
+	);
 }
 
 export default App;
